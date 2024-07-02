@@ -1,0 +1,23 @@
+.playback-toggle {
+
+    font-size: large;
+    font-weight: bold;
+    color: #1d3557;
+    cursor: pointer;
+    margin: 0;
+    padding: 0px;
+    background-color: #2a6f97;
+    border-radius: 8px;
+    /* border: 5px solid #1d3557; */
+}
+
+.playback-toggle svg {
+    height: 100px;
+    width: 100px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.playback-toggle:hover {
+    background-color: color-mix(in srgb, #2a6f97 75%, white);
+}

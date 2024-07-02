@@ -1,0 +1,77 @@
+.task {
+    display: flex;
+    min-width: 600px;
+    justify-content: center;
+    align-items: center;
+    /* margin: 0; */
+    gap: 10px;
+
+    /* position: relative; */
+
+}
+
+.task h3 {
+    margin: 0;
+    color: #f1faee;
+    font-size: x-large;
+}
+
+.input-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: calc(100% - 191px);
+    background-color: #f1faee;
+    border-radius: 6px;
+}
+
+/* .input-button:focus-within {
+    gap: 10px;
+} */
+
+.task input {
+    font-size: large;
+    /* width: calc(100% - 161px - 100px); */
+    width: calc(100% - 55px);
+    height: 28px;
+    border: none;
+    background-color: #f1faee;
+    padding: 5px 5px 5px 0;
+    outline: none;
+}
+
+/* .task input:focus {
+    padding: 5px 0 5px 5px;
+} */
+
+.task svg {
+    /* width: 30px; */
+    pointer-events: none;
+}
+.history {
+    height: 30px;
+    width: 40px;
+    /* height: 25px; */
+    /* width: 25px; */
+    margin: 0;
+    padding: 0;
+    color: #1D3557;
+    /* padding-left: 5px; */
+
+    /* color: #a9c1e3; */
+    background-color: #f1faee;;
+
+    /* position: absolute;
+    right: 65px;
+    top: 2px; */
+}
+
+.history:focus {
+    outline: 3px solid color-mix(in srgb, #1D3557 70%, white);
+    border-radius: 4px;
+}
+
+.history:hover {
+    /* background-color: color-mix(in srgb, #2a6f97 75%, white); */
+}

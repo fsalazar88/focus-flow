@@ -1,0 +1,64 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    /* position: relative; */
+}
+
+.timer-settings {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+}
+
+.timer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 50px;
+    border-radius: 10px;
+    border: 5px solid #1d3557;
+}
+
+.timer.break-interval {
+    background-color: rgb(156, 14, 14);
+}
+
+.timer.work-interval {
+    background-color: #457b9d;
+}
+
+.minutes, .seconds, .separator {
+    font-size: 80px;
+    color: #f1faee;
+}
+
+svg {
+    width: 30px;
+    pointer-events: none;
+}
+
+.settings-button {
+    position: absolute;
+    /* top: 0;
+    right: -45px; */
+    top: 7px;
+    right: 7px;
+    height: 35px;
+    /* color: #a9c1e3; */
+    color: #1D3557;
+    width: 35px;
+    margin: 0px;
+    padding: 0px;
+    /* background-color: #2a6f97; */
+    /* background-color: #457b9d; */
+    background-color: inherit;
+    border-radius: 4px;
+}
+
+/* .settings-button:hover {
+    background-color: color-mix(in srgb, #2a6f97 75%, white);
+} */
+
