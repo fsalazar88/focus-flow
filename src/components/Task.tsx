@@ -6,6 +6,8 @@ interface TaskProps {
     remainingTime: number,
     workLength: number,
     isBreak: boolean,
+    saveTimerState: () => void,
+    toggleTimer: () => void,
 }
 
 interface Task {
@@ -14,7 +16,7 @@ interface Task {
     date: string,
 }
 
-function Task( {remainingTime, workLength, isBreak}: TaskProps ) {
+function Task( {remainingTime, workLength, isBreak, saveTimerState, toggleTimer }: TaskProps ) {
 
     const [task, setTask] = useState('')
     const [taskHistory, setTaskHistory] = useState<Task[]>([])
@@ -39,9 +41,10 @@ function Task( {remainingTime, workLength, isBreak}: TaskProps ) {
     // }, [taskHistory])
 
     function handleClick(){
+        saveTimerState();
+        toggleTimer();
         navigate('timer/history');
     }
-
 
     function handleChange(event: React.ChangeEvent<HTMLInputElement>){
         setTask(event.target.value)

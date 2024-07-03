@@ -4,10 +4,10 @@ import Timer from './Timer';
 
 function Pomodoro() {
     return (
-            <Routes>
-                <Route path="/" element={<Timer key={location.pathname} />} />
-                <Route path="/timer/history" element={<History key={location.pathname} />} />
-            </Routes>
+        <Routes>
+            <Route path="/" element={<Timer key={location.pathname} />} />
+            <Route path="/timer/history" element={<History key={location.pathname} />} />
+        </Routes>
     );
 }
 

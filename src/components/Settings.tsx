@@ -2,17 +2,20 @@ import { useEffect } from 'react';
 import './Settings.css'
 
 interface SettingsProps {
-    shortBreakLength: number; 
-    longBreakLength: number;
-    workLength: number;
-    onChange: (element: HTMLSelectElement) => void;
-    onClick: () => void;
-    totalSteps: number;   
-    color?: string; // Stretch Goal --> Add ability for user to select color theme
-    audioCompletionNotification?: boolean;
+    shortBreakLength: number, 
+    longBreakLength: number,
+    workLength: number,
+    // onChange: (element: HTMLSelectElement) => void;
+    onCloseClick: () => void,
+    onSaveClick: () => void,
+    totalSteps: number,
+    color?: string, // Stretch Goal --> Add ability for user to select color theme
+    audioCompletionNotification?: boolean,
+    remainingTime: number,
+    isPaused: boolean,
 }
 
-function Settings ( { shortBreakLength, longBreakLength, workLength, onChange, totalSteps, onClick }: SettingsProps ) {
+function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClick, totalSteps, onSaveClick, remainingTime, isPaused }: SettingsProps ) {
 
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent){
@@ -46,10 +49,14 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onChange, t
     }, []);
 
     function closeSettings() {
+        // const remainingMinutes = Math.floor(remainingTime / 60);
         const modal = document.querySelector(".modal")
         if(modal?.classList.contains("active")){
             modal.classList.remove("active")
         }
+        // if(isPaused && remainingMinutes !== shortBreakLength && remainingMinutes !== longBreakLength && remainingMinutes !== workLength){
+        //     onCloseClick();
+        // }
     }
 
     return (
@@ -118,7 +125,7 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onChange, t
                         
                     </div>
                 </div>
-                <button onClick={onClick} id='apply'>
+                <button onClick={onSaveClick} id='apply'>
                     Apply Settings
                 </button>
             </div>

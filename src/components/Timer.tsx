@@ -20,10 +20,15 @@ function Timer() {
     const [isBreak, setIsBreak] = useState(false)
 
     useEffect(() => {
-    //    setRemainingTime(workLength * 60) // need to remove dependency and run a function that gets all settings values from saved settings
-    //    toggleTimer()
-        console.log('Timer: applySettings fired on initial render')
-       applySettings()
+        const savedState = localStorage.getItem('timerState');
+        if(savedState !== null){
+            const parsedState = JSON.parse(savedState);
+            console.log('parsedState = ', parsedState)
+            localStorage.removeItem('timerState');
+        } else {
+            console.log('Timer: applySettings fired on initial render')
+            applySettings()
+        }
     }, [])
 
     useEffect(() => {
@@ -107,6 +112,24 @@ function Timer() {
         }
     }
 
+    function saveTimerState(){
+        const timerState = {
+            remainingTime,
+            workLength,
+            shortBreakLength,
+            longBreakLength,
+            currentStep,
+            totalSteps,
+            isBreak,
+        };
+        localStorage.setItem('timerState', JSON.stringify(timerState))
+    }
+
+    // function handleOpenHistory(){
+    //     saveTimerState();
+
+    // }
+
     function handleIntervalChange(element: HTMLSelectElement){
         switch (element.id) {
             case "workLength":
@@ -148,6 +171,9 @@ function Timer() {
     function handleOpenSettings() {
         const modal = document.querySelector(".modal");
         modal?.classList.add("active")
+        if(!isPaused){
+            toggleTimer();
+        }
     }
 
     // function showNotification() {
@@ -171,6 +197,8 @@ function Timer() {
                 remainingTime={remainingTime}
                 workLength={workLength}
                 isBreak={isBreak}
+                saveTimerState={saveTimerState}
+                toggleTimer={toggleTimer}
             />
             <div className='timer-settings'>
                 <div className={`timer ${isBreak ? 'break-interval' : 'work-interval'}`}>
@@ -204,8 +232,10 @@ function Timer() {
                 shortBreakLength={shortBreakLength}
                 longBreakLength={longBreakLength}
                 totalSteps={totalSteps}
-                onChange={handleIntervalChange}
-                onClick={applySettings}
+                onCloseClick={toggleTimer}
+                onSaveClick={applySettings}
+                remainingTime={remainingTime}
+                isPaused={isPaused}
             />
             <Progress
                 currentStep={currentStep}
