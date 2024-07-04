@@ -123,12 +123,12 @@
     gap: 10px;
 }
 
-.audio-alert, .move-to-front {
+.audio-alert, .visual-alert {
   display: flex;
   flex-direction: column;
 }
 
-.move-to-front p, .audio-alert p {
+.visual-alert p, .audio-alert p {
   margin: 0;
 }
 

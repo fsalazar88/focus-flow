@@ -112,7 +112,7 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClic
                                     <span className="slider round"></span>
                                 </label>
                             </div>
-                            <div className='move-to-front'>   
+                            <div className='visual-alert'>   
                                 <p>Visual Alert</p>
                                 <label className="switch">
                                     <input type="checkbox"/>

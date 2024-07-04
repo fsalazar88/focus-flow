@@ -18,13 +18,16 @@ function Timer() {
     const [currentStep, setCurrentStep] = useState(1)
     const [totalSteps, setTotalSteps] = useState(2)
     const [isBreak, setIsBreak] = useState(false)
+    const [hasVisualAlert, setHasVisualAlert] = useState<boolean | undefined>(false);
+    const [hasAudioAlert, setHasAudioAlert] = useState<boolean | undefined>(false);
 
     useEffect(() => {
         const savedState = localStorage.getItem('timerState');
         if(savedState !== null){
-            const parsedState = JSON.parse(savedState);
+            const parsedState = JSON.parse(savedState); 
             console.log('parsedState = ', parsedState)
-            localStorage.removeItem('timerState');
+            console.log(Object.keys(parsedState))
+            
         } else {
             console.log('Timer: applySettings fired on initial render')
             applySettings()
@@ -110,11 +113,35 @@ function Timer() {
             const selectElements = timeIntervalsDiv.querySelectorAll<HTMLSelectElement>("select");
             selectElements.forEach((element) => handleIntervalChange(element));
         }
+
+        const visualAlertElement = document.querySelector('.visual-alert');
+        if(visualAlertElement){
+            handleNotificationsChange(visualAlertElement);
+        }
+        const audioAlertElement = document.querySelector('.audio-alert');
+        if(audioAlertElement){
+            handleNotificationsChange(audioAlertElement);
+        }
+    }
+
+    function handleNotificationsChange(element: Element) {
+        const className = element.className;
+        const isChecked = element.querySelector('input')?.checked;
+        switch (className) {
+            case 'audio-alert':
+                setHasAudioAlert(isChecked)
+                break;
+            case 'visual-alert':
+                setHasVisualAlert(isChecked)
+                break;
+            default:
+                break;
+        }
     }
 
     function saveTimerState(){
         const timerState = {
-            remainingTime,
+            remainingTime: remainingTime / 60,
             workLength,
             shortBreakLength,
             longBreakLength,
