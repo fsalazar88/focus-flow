@@ -113,7 +113,6 @@ function Timer() {
             const selectElements = timeIntervalsDiv.querySelectorAll<HTMLSelectElement>("select");
             selectElements.forEach((element) => handleIntervalChange(element));
         }
-
         const visualAlertElement = document.querySelector('.visual-alert');
         if(visualAlertElement){
             handleNotificationsChange(visualAlertElement);
@@ -263,6 +262,8 @@ function Timer() {
                 onSaveClick={applySettings}
                 remainingTime={remainingTime}
                 isPaused={isPaused}
+                hasVisualAlert={hasVisualAlert}
+                hasAudioAlert={hasAudioAlert}
             />
             <Progress
                 currentStep={currentStep}

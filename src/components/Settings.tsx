@@ -13,6 +13,9 @@ interface SettingsProps {
     audioCompletionNotification?: boolean,
     remainingTime: number,
     isPaused: boolean,
+    hasAudioAlert: boolean | undefined,
+    hasVisualAlert: boolean | undefined,
+
 }
 
 function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClick, totalSteps, onSaveClick, remainingTime, isPaused }: SettingsProps ) {
