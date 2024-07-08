@@ -8,33 +8,80 @@ import Settings from './Settings';
 import Task from './Task';
 import './Timer.css'
 
+interface SavedState {
+    remainingTime: number,
+    workLength: number,
+    shortBreakLength: number,
+    longBreakLength: number,
+    currentStep: number;
+    totalSteps: number,
+    isBreak: boolean,
+    hasAudioAlert: boolean | undefined,
+    hasVisualAlert: boolean | undefined,
+}
+
+interface SavedSettings {
+    workLength: number,
+    shortBreakLength: number,
+    longBreakLength: number,
+    totalSteps: number,
+    hasAudioAlert: boolean | undefined,
+    hasVisualAlert: boolean | undefined,
+}
+
+const savedState = localStorage.getItem('timerState');
+let parsedState: SavedState;
+if(savedState !== null){
+    parsedState = JSON.parse(savedState);
+}
+
+const savedSettings = localStorage.getItem('savedSettings');
+let parsedSettings: SavedSettings;
+if(savedSettings !== null){
+    parsedSettings = JSON.parse(savedSettings);
+}
+
 function Timer() {
-    const [workLength, setWorkLength] = useState(9); // Default work Interval set to 25 minutes
-    const [shortBreakLength, setShortBreakLength] = useState(2)
-    const [longBreakLength, setLongBreakLength] = useState(3)
-    const [remainingTime, setRemainingTime] = useState(1) // Remaining time in seconds
+    const [workLength, setWorkLength] = useState(parsedState ? parsedState.workLength : (parsedSettings ? parsedSettings.workLength : 25)); // Default work Interval set to 25 minutes
+    const [shortBreakLength, setShortBreakLength] = useState(parsedState ? parsedState.shortBreakLength : (parsedSettings ? parsedSettings.shortBreakLength : 5))
+    const [longBreakLength, setLongBreakLength] = useState(parsedState ? parsedState.longBreakLength : (parsedSettings ? parsedSettings.longBreakLength : 20))
+    const [remainingTime, setRemainingTime] = useState(parsedState ? parsedState.remainingTime : (parsedSettings ? parsedSettings.workLength * 60 : workLength * 60)) // Remaining time in seconds
     const [isPaused, setIsPaused] = useState(true);
     const [timerIntervalId, setTimerIntervalId] = useState<NodeJS.Timeout | undefined>();
-    const [currentStep, setCurrentStep] = useState(1)
-    const [totalSteps, setTotalSteps] = useState(2)
-    const [isBreak, setIsBreak] = useState(false)
-    const [hasVisualAlert, setHasVisualAlert] = useState<boolean | undefined>(false);
-    const [hasAudioAlert, setHasAudioAlert] = useState<boolean | undefined>(false);
+    const [currentStep, setCurrentStep] = useState(parsedState ? parsedState.currentStep : 1)
+    const [totalSteps, setTotalSteps] = useState(parsedState ? parsedState.totalSteps : (parsedSettings ? parsedSettings.totalSteps : 8))
+    const [isBreak, setIsBreak] = useState(parsedState ? parsedState.isBreak : false)
+    const [hasVisualAlert, setHasVisualAlert] = useState<boolean | undefined>(parsedState ? parsedState.hasVisualAlert : (parsedSettings ? parsedSettings.hasVisualAlert : false));
+    const [hasAudioAlert, setHasAudioAlert] = useState<boolean | undefined>(parsedState ? parsedState.hasAudioAlert : (parsedSettings ? parsedSettings.hasAudioAlert : false));
 
     useEffect(() => {
         const savedState = localStorage.getItem('timerState');
-        if(savedState !== null){
+        const savedSettings = localStorage.getItem('savedSettings');
+
+        if(savedState !== null && workLength === 3){
             const parsedState = JSON.parse(savedState); 
-            console.log('parsedState = ', parsedState)
-            console.log(Object.keys(parsedState))
-            
+            applySavedState(parsedState);
+            // console.log('parsedState = ', parsedState);
+            // console.log(Object.keys(parsedState));
+        } else if(savedSettings !== null) {
+            console.log('inside no dependence useEffect')
+            const parsedSettings = JSON.parse(savedSettings);
+            applySavedSettings(parsedSettings);
+            // console.log('savedSettings = ', parsedSettings)
         } else {
             console.log('Timer: applySettings fired on initial render')
-            applySettings()
+            applySettings();
         }
     }, [])
 
     useEffect(() => {
+        console.log('inside all dependencies useEffect')
+
+        saveSettings();
+    }, [workLength, shortBreakLength, longBreakLength, totalSteps, hasAudioAlert, hasVisualAlert])
+
+    useEffect(() => {
+        
         if(currentStep % 2 !== 0){
             setRemainingTime(workLength * 60)
             if(!isPaused){
@@ -107,11 +154,38 @@ function Timer() {
         }
     }
 
+    function applySavedState(savedState: SavedState){
+        // console.log('inside applySavedState')
+        console.log('inside applySavedState, savedState = ', savedState)
+        setRemainingTime(savedState.remainingTime);
+        setWorkLength(savedState.workLength);
+        setShortBreakLength(savedState.shortBreakLength);
+        setLongBreakLength(savedState.longBreakLength);
+        setCurrentStep(savedState.currentStep);
+        setTotalSteps(savedState.totalSteps);
+        setIsBreak(savedState.isBreak);
+        setHasAudioAlert(savedState.hasAudioAlert);
+        setHasVisualAlert(savedState.hasVisualAlert);
+    }
+
+    function applySavedSettings(savedSettings: SavedSettings){
+        //console.log('inside applySavedSettigns');
+        console.log('inside applySavedSettigns, savedSettings = ', savedSettings)
+        setWorkLength(savedSettings.workLength);
+        setShortBreakLength(savedSettings.shortBreakLength);
+        setLongBreakLength(savedSettings.longBreakLength);
+        setTotalSteps(savedSettings.totalSteps);
+        setHasAudioAlert(savedSettings.hasAudioAlert);
+        setHasVisualAlert(savedSettings.hasVisualAlert);
+    }
+
     function applySettings(){
         const timeIntervalsDiv = document.querySelector(".time-intervals");
         if (timeIntervalsDiv) {
             const selectElements = timeIntervalsDiv.querySelectorAll<HTMLSelectElement>("select");
-            selectElements.forEach((element) => handleIntervalChange(element));
+            selectElements.forEach((element) => {
+                handleIntervalChange(element)
+            });
         }
         const visualAlertElement = document.querySelector('.visual-alert');
         if(visualAlertElement){
@@ -139,16 +213,33 @@ function Timer() {
     }
 
     function saveTimerState(){
-        const timerState = {
-            remainingTime: remainingTime / 60,
+        const timerState: SavedState = {
+            remainingTime,
             workLength,
             shortBreakLength,
             longBreakLength,
             currentStep,
             totalSteps,
             isBreak,
+            hasAudioAlert,
+            hasVisualAlert,
         };
+        console.log('inside saveTimerState, timerState = ', timerState)
         localStorage.setItem('timerState', JSON.stringify(timerState))
+    }
+
+    function saveSettings() {
+        
+        const settings = {
+            workLength,
+            shortBreakLength,
+            longBreakLength,
+            totalSteps,
+            hasAudioAlert,
+            hasVisualAlert,
+        };
+        console.log('inside saveSettings, settings = ', settings)
+        localStorage.setItem('savedSettings', JSON.stringify(settings));
     }
 
     // function handleOpenHistory(){
@@ -168,7 +259,6 @@ function Timer() {
                 setLongBreakLength(parseInt(element.value))
                 break;
             case "workingSessions":
-                // setTotalSteps(parseInt(element.value) * 2)
                 setTotalSteps(parseInt(element.value) * 2)
                 break;
             default:
