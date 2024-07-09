@@ -6,6 +6,7 @@ interface TaskProps {
     remainingTime: number,
     workLength: number,
     isBreak: boolean,
+    isPaused: boolean,
     saveTimerState: () => void,
     toggleTimer: () => void,
 }
@@ -16,11 +17,19 @@ interface Task {
     date: string,
 }
 
-function Task( {remainingTime, workLength, isBreak, saveTimerState, toggleTimer }: TaskProps ) {
+function Task( {remainingTime, workLength, isBreak, saveTimerState, toggleTimer, isPaused }: TaskProps ) {
 
     const [task, setTask] = useState('')
     const [taskHistory, setTaskHistory] = useState<Task[]>([])
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const savedHistory = localStorage.getItem('history');
+        if(savedHistory){
+            const parsedHistory = JSON.parse(savedHistory);
+            setTaskHistory(parsedHistory)
+        }
+    }, [])
 
     useEffect(() => {
         if(remainingTime === 0 && !isBreak){
@@ -42,7 +51,9 @@ function Task( {remainingTime, workLength, isBreak, saveTimerState, toggleTimer 
 
     function handleClick(){
         saveTimerState();
-        toggleTimer();
+        if(!isPaused){
+            toggleTimer();
+        }
         navigate('timer/history');
     }
 

@@ -29,85 +29,90 @@ interface SavedSettings {
     hasVisualAlert: boolean | undefined,
 }
 
-const savedState = localStorage.getItem('timerState');
-let parsedState: SavedState;
-if(savedState !== null){
-    parsedState = JSON.parse(savedState);
-}
-
 const savedSettings = localStorage.getItem('savedSettings');
-let parsedSettings: SavedSettings;
+let parsedSettings: SavedSettings | null = null;
 if(savedSettings !== null){
     parsedSettings = JSON.parse(savedSettings);
 }
 
 function Timer() {
-    const [workLength, setWorkLength] = useState(parsedState ? parsedState.workLength : (parsedSettings ? parsedSettings.workLength : 25)); // Default work Interval set to 25 minutes
-    const [shortBreakLength, setShortBreakLength] = useState(parsedState ? parsedState.shortBreakLength : (parsedSettings ? parsedSettings.shortBreakLength : 5))
-    const [longBreakLength, setLongBreakLength] = useState(parsedState ? parsedState.longBreakLength : (parsedSettings ? parsedSettings.longBreakLength : 20))
-    const [remainingTime, setRemainingTime] = useState(parsedState ? parsedState.remainingTime : (parsedSettings ? parsedSettings.workLength * 60 : workLength * 60)) // Remaining time in seconds
+    const [workLength, setWorkLength] = useState(parsedSettings ? parsedSettings.workLength : 25); // Default work Interval set to 25 minutes
+    const [shortBreakLength, setShortBreakLength] = useState(parsedSettings ? parsedSettings.shortBreakLength : 5)
+    const [longBreakLength, setLongBreakLength] = useState(parsedSettings ? parsedSettings.longBreakLength : 20)
+    const [remainingTime, setRemainingTime] = useState(parsedSettings ? parsedSettings.workLength * 60 : 25 * 60) // Remaining time in seconds
     const [isPaused, setIsPaused] = useState(true);
     const [timerIntervalId, setTimerIntervalId] = useState<NodeJS.Timeout | undefined>();
-    const [currentStep, setCurrentStep] = useState(parsedState ? parsedState.currentStep : 1)
-    const [totalSteps, setTotalSteps] = useState(parsedState ? parsedState.totalSteps : (parsedSettings ? parsedSettings.totalSteps : 8))
-    const [isBreak, setIsBreak] = useState(parsedState ? parsedState.isBreak : false)
-    const [hasVisualAlert, setHasVisualAlert] = useState<boolean | undefined>(parsedState ? parsedState.hasVisualAlert : (parsedSettings ? parsedSettings.hasVisualAlert : false));
-    const [hasAudioAlert, setHasAudioAlert] = useState<boolean | undefined>(parsedState ? parsedState.hasAudioAlert : (parsedSettings ? parsedSettings.hasAudioAlert : false));
+    const [currentStep, setCurrentStep] = useState(1)
+    const [totalSteps, setTotalSteps] = useState(parsedSettings ? parsedSettings.totalSteps : 8)
+    const [isBreak, setIsBreak] = useState(false)
+    const [hasVisualAlert, setHasVisualAlert] = useState<boolean | undefined>(parsedSettings ? parsedSettings.hasVisualAlert : false)
+    const [hasAudioAlert, setHasAudioAlert] = useState<boolean | undefined>(parsedSettings ? parsedSettings.hasAudioAlert : false)
 
     useEffect(() => {
         const savedState = localStorage.getItem('timerState');
-        const savedSettings = localStorage.getItem('savedSettings');
-
-        if(savedState !== null && workLength === 3){
-            const parsedState = JSON.parse(savedState); 
-            applySavedState(parsedState);
-            // console.log('parsedState = ', parsedState);
-            // console.log(Object.keys(parsedState));
-        } else if(savedSettings !== null) {
-            console.log('inside no dependence useEffect')
-            const parsedSettings = JSON.parse(savedSettings);
-            applySavedSettings(parsedSettings);
-            // console.log('savedSettings = ', parsedSettings)
-        } else {
-            console.log('Timer: applySettings fired on initial render')
-            applySettings();
+        if (savedState) {
+            const parsedState: SavedState = JSON.parse(savedState);
+            setRemainingTime(parsedState.remainingTime);
+            setWorkLength(parsedState.workLength);
+            setShortBreakLength(parsedState.shortBreakLength);
+            setLongBreakLength(parsedState.longBreakLength);
+            setCurrentStep(parsedState.currentStep);
+            setTotalSteps(parsedState.totalSteps);
+            setIsBreak(parsedState.isBreak);
+            setHasAudioAlert(parsedState.hasAudioAlert);
+            setHasVisualAlert(parsedState.hasVisualAlert);
+        } else if (parsedSettings) {
+            setWorkLength(parsedSettings.workLength);
+            setShortBreakLength(parsedSettings.shortBreakLength);
+            setLongBreakLength(parsedSettings.longBreakLength);
+            setTotalSteps(parsedSettings.totalSteps);
+            setHasAudioAlert(parsedSettings.hasAudioAlert);
+            setHasVisualAlert(parsedSettings.hasVisualAlert);
+            setRemainingTime(parsedSettings.workLength * 60);
         }
     }, [])
 
     useEffect(() => {
         console.log('inside all dependencies useEffect')
-
         saveSettings();
+        const savedState = localStorage.getItem('timerState');
+        if(!savedState){
+            console.log('There was no saved timer STATE');
+            setTime();
+        }
+
     }, [workLength, shortBreakLength, longBreakLength, totalSteps, hasAudioAlert, hasVisualAlert])
 
-    useEffect(() => {
+
+
+
+    // useEffect(() => {
         
-        if(currentStep % 2 !== 0){
-            setRemainingTime(workLength * 60)
-            if(!isPaused){
-                toggleTimer();
-            }
-        }
-    }, [workLength])
+    //     if(currentStep % 2 !== 0){
+    //         setRemainingTime(workLength * 60)
+    //         if(!isPaused){
+    //             toggleTimer();
+    //         }
+    //     }
+    // }, [workLength])
 
-    useEffect(() => {
-        if(currentStep % 2 === 0){
-            setRemainingTime(shortBreakLength * 60)
-            if(!isPaused){
-                toggleTimer()
-            }
-        }
-    }, [shortBreakLength])
+    // useEffect(() => {
+    //     if(currentStep % 2 === 0){
+    //         setRemainingTime(shortBreakLength * 60)
+    //         if(!isPaused){
+    //             toggleTimer()
+    //         }
+    //     }
+    // }, [shortBreakLength])
 
-    useEffect(() => {
-        if(currentStep === totalSteps){
-            setRemainingTime(longBreakLength * 60)
-            if(!isPaused){
-                toggleTimer()
-            }
-        }
-    }, [longBreakLength])
-
+    // useEffect(() => {
+    //     if(currentStep === totalSteps){
+    //         setRemainingTime(longBreakLength * 60)
+    //         if(!isPaused){
+    //             toggleTimer()
+    //         }
+    //     }
+    // }, [longBreakLength])
 
     useEffect(() => {
         if(remainingTime === 0){
@@ -119,7 +124,9 @@ function Timer() {
      }, [remainingTime])
 
      useEffect(() => {
-        setTime() 
+        if (remainingTime === 0){
+            setTime() 
+        }
             // call a function that toggles theme for working and break sessions
      
             // add a apply button in settings to update settings
@@ -143,6 +150,7 @@ function Timer() {
 
     function toggleTimer () {
         if(isPaused){
+            localStorage.removeItem('timerState');
             const intervalId = setInterval(() => {
                 setRemainingTime((prev) => prev - 6)
             }, 1000)
@@ -154,32 +162,33 @@ function Timer() {
         }
     }
 
-    function applySavedState(savedState: SavedState){
-        // console.log('inside applySavedState')
-        console.log('inside applySavedState, savedState = ', savedState)
-        setRemainingTime(savedState.remainingTime);
-        setWorkLength(savedState.workLength);
-        setShortBreakLength(savedState.shortBreakLength);
-        setLongBreakLength(savedState.longBreakLength);
-        setCurrentStep(savedState.currentStep);
-        setTotalSteps(savedState.totalSteps);
-        setIsBreak(savedState.isBreak);
-        setHasAudioAlert(savedState.hasAudioAlert);
-        setHasVisualAlert(savedState.hasVisualAlert);
-    }
+    // function applySavedState(savedState: SavedState){
+    //     // console.log('inside applySavedState')
+    //     console.log('inside applySavedState, savedState = ', savedState)
+    //     setRemainingTime(savedState.remainingTime);
+    //     setWorkLength(savedState.workLength);
+    //     setShortBreakLength(savedState.shortBreakLength);
+    //     setLongBreakLength(savedState.longBreakLength);
+    //     setCurrentStep(savedState.currentStep);
+    //     setTotalSteps(savedState.totalSteps);
+    //     setIsBreak(savedState.isBreak);
+    //     setHasAudioAlert(savedState.hasAudioAlert);
+    //     setHasVisualAlert(savedState.hasVisualAlert);
+    // }
 
-    function applySavedSettings(savedSettings: SavedSettings){
-        //console.log('inside applySavedSettigns');
-        console.log('inside applySavedSettigns, savedSettings = ', savedSettings)
-        setWorkLength(savedSettings.workLength);
-        setShortBreakLength(savedSettings.shortBreakLength);
-        setLongBreakLength(savedSettings.longBreakLength);
-        setTotalSteps(savedSettings.totalSteps);
-        setHasAudioAlert(savedSettings.hasAudioAlert);
-        setHasVisualAlert(savedSettings.hasVisualAlert);
-    }
+    // function applySavedSettings(savedSettings: SavedSettings){
+    //     //console.log('inside applySavedSettigns');
+    //     console.log('inside applySavedSettigns, savedSettings = ', savedSettings)
+    //     setWorkLength(savedSettings.workLength);
+    //     setShortBreakLength(savedSettings.shortBreakLength);
+    //     setLongBreakLength(savedSettings.longBreakLength);
+    //     setTotalSteps(savedSettings.totalSteps);
+    //     setHasAudioAlert(savedSettings.hasAudioAlert);
+    //     setHasVisualAlert(savedSettings.hasVisualAlert);
+    // }
 
     function applySettings(){
+        localStorage.removeItem('timerState');
         const timeIntervalsDiv = document.querySelector(".time-intervals");
         if (timeIntervalsDiv) {
             const selectElements = timeIntervalsDiv.querySelectorAll<HTMLSelectElement>("select");
@@ -229,7 +238,6 @@ function Timer() {
     }
 
     function saveSettings() {
-        
         const settings = {
             workLength,
             shortBreakLength,
@@ -241,11 +249,6 @@ function Timer() {
         console.log('inside saveSettings, settings = ', settings)
         localStorage.setItem('savedSettings', JSON.stringify(settings));
     }
-
-    // function handleOpenHistory(){
-    //     saveTimerState();
-
-    // }
 
     function handleIntervalChange(element: HTMLSelectElement){
         switch (element.id) {
@@ -287,9 +290,9 @@ function Timer() {
     function handleOpenSettings() {
         const modal = document.querySelector(".modal");
         modal?.classList.add("active")
-        if(!isPaused){
-            toggleTimer();
-        }
+        // if(!isPaused){
+        //     toggleTimer();
+        // }
     }
 
     // function showNotification() {
@@ -315,6 +318,7 @@ function Timer() {
                 isBreak={isBreak}
                 saveTimerState={saveTimerState}
                 toggleTimer={toggleTimer}
+                isPaused={isPaused}
             />
             <div className='timer-settings'>
                 <div className={`timer ${isBreak ? 'break-interval' : 'work-interval'}`}>
@@ -354,6 +358,7 @@ function Timer() {
                 isPaused={isPaused}
                 hasVisualAlert={hasVisualAlert}
                 hasAudioAlert={hasAudioAlert}
+                toggleTimer={toggleTimer}
             />
             <Progress
                 currentStep={currentStep}

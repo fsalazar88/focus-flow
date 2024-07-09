@@ -1,6 +1,18 @@
 import { useEffect } from 'react';
 import './Settings.css'
 
+interface SavedState {
+    remainingTime: number,
+    workLength: number,
+    shortBreakLength: number,
+    longBreakLength: number,
+    currentStep: number;
+    totalSteps: number,
+    isBreak: boolean,
+    hasAudioAlert: boolean | undefined,
+    hasVisualAlert: boolean | undefined,
+}
+
 interface SettingsProps {
     shortBreakLength: number, 
     longBreakLength: number,
@@ -8,6 +20,7 @@ interface SettingsProps {
     // onChange: (element: HTMLSelectElement) => void;
     onCloseClick: () => void,
     onSaveClick: () => void,
+    toggleTimer: () => void,
     totalSteps: number,
     color?: string, // Stretch Goal --> Add ability for user to select color theme
     audioCompletionNotification?: boolean,
@@ -18,7 +31,7 @@ interface SettingsProps {
 
 }
 
-function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClick, totalSteps, onSaveClick, remainingTime, isPaused }: SettingsProps ) {
+function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClick, totalSteps, onSaveClick, remainingTime, isPaused, toggleTimer }: SettingsProps ) {
 
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent){
@@ -57,7 +70,13 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClic
         if(modal?.classList.contains("active")){
             modal.classList.remove("active")
         }
-        // if(isPaused && remainingMinutes !== shortBreakLength && remainingMinutes !== longBreakLength && remainingMinutes !== workLength){
+     
+        // const savedState = localStorage.getItem('timerState');
+        // let parsedState: SavedState | null = null;
+        // if(savedState !== null){
+        //     parsedState = JSON.parse(savedState);
+        // }
+        // if(isPaused && remainingTime !== shortBreakLength*60 && remainingTime !== longBreakLength*60 && remainingTime !== workLength*60 && remainingTime !== parsedState?.remainingTime){
         //     onCloseClick();
         // }
     }
@@ -71,7 +90,7 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClic
                         <h2>Time Intervals</h2>
                         <div>
                             <label htmlFor="workLength">Work Session Length:</label>
-                            <select name="workLength" defaultValue={25} id="workLength">
+                            <select name="workLength" defaultValue={workLength} id="workLength">
                                 <option value={1}>1</option>
                                 <option value={20}>20</option>
                                 <option value={25}>25</option>
@@ -80,7 +99,7 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClic
                         </div>
                         <div>
                             <label htmlFor="shortBreakLength">Short Break Length:</label>
-                            <select name="shortBreakLength" defaultValue={5} id="shortBreakLength">
+                            <select name="shortBreakLength" defaultValue={shortBreakLength} id="shortBreakLength">
                                 <option value={1}>1</option>
                                 <option value={2}>2</option>
                                 <option value={5}>5</option>
@@ -89,7 +108,7 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClic
                         </div>
                         <div>
                             <label htmlFor="longBreakLength">Long Break Length:</label>
-                            <select name="longBreakLength" defaultValue={20} id="longBreakLength">
+                            <select name="longBreakLength" defaultValue={longBreakLength} id="longBreakLength">
                                 <option value={2}>2</option>
                                 <option value={15}>15</option>
                                 <option value={20}>20</option>
@@ -99,7 +118,7 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClic
                         </div>
                         <div>
                         <label htmlFor="workingSessions">Number of Working Sessions:</label>
-                            <select name="workingSessions" defaultValue={4} id="workingSessions">
+                            <select name="workingSessions" defaultValue={totalSteps / 2} id="workingSessions">
                                 <option value={3}>3</option>
                                 <option value={4}>4</option>
                             </select>
@@ -111,7 +130,7 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClic
                             <div className='audio-alert'>   
                                 <p>Audio Alert</p>
                                 <label className="switch">
-                                    <input type="checkbox"/>
+                                    <input type="checkbox" />
                                     <span className="slider round"></span>
                                 </label>
                             </div>
