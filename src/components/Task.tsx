@@ -39,7 +39,7 @@ function Task( {remainingTime, workLength, isBreak, saveTimerState, toggleTimer,
                 timeSpent: workLength,
                 date: new Date().toISOString(),
             }
-            const updatedHistory = [...taskHistory, newTask];
+            const updatedHistory = [newTask, ...taskHistory];
             setTaskHistory(updatedHistory)
             localStorage.setItem('history', JSON.stringify(updatedHistory))
         }

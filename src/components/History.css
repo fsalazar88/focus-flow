@@ -50,9 +50,11 @@
 .history-item h3 {
     margin: 0 0 10px;
     color: #333;
+    font-size:medium;
 }
 
 .history-item p {
+    display: inline;
     margin: 5px 0;
     color: #666;
 }

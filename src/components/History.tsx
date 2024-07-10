@@ -63,7 +63,8 @@ function History () {
                         <li key={index} className="history-item">
                             <h3>{task.description}</h3>
                             <p>Time Spent: {task.timeSpent} minutes</p>
-                            <p>Date: {new Date(task.date).toLocaleString()}</p>
+                            <p> &middot; </p>
+                            <p>Date: {new Date(task.date).toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short' })}</p>
                         </li>
                     ))}
                 </ul>

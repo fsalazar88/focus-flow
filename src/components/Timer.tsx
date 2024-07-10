@@ -47,8 +47,14 @@ function Timer() {
     const [isBreak, setIsBreak] = useState(false)
     const [hasVisualAlert, setHasVisualAlert] = useState<boolean | undefined>(parsedSettings ? parsedSettings.hasVisualAlert : false)
     const [hasAudioAlert, setHasAudioAlert] = useState<boolean | undefined>(parsedSettings ? parsedSettings.hasAudioAlert : false)
+    const [hasSavedState, setHasSavedState] = useState(true);
 
     useEffect(() => {
+        console.log('inside useEffect to set savedState')
+        if(hasSavedState){
+            console.log('saved state is true so this showed')
+            setHasSavedState(false)
+        }
         const savedState = localStorage.getItem('timerState');
         if (savedState) {
             const parsedState: SavedState = JSON.parse(savedState);
@@ -73,46 +79,17 @@ function Timer() {
     }, [])
 
     useEffect(() => {
-        console.log('inside all dependencies useEffect')
+        // console.log('inside all dependencies useEffect')
         saveSettings();
         const savedState = localStorage.getItem('timerState');
         if(!savedState){
-            console.log('There was no saved timer STATE');
+            // console.log('There was no saved timer STATE');
             setTime();
         }
-
+        localStorage.removeItem('timerState');
     }, [workLength, shortBreakLength, longBreakLength, totalSteps, hasAudioAlert, hasVisualAlert])
 
 
-
-
-    // useEffect(() => {
-        
-    //     if(currentStep % 2 !== 0){
-    //         setRemainingTime(workLength * 60)
-    //         if(!isPaused){
-    //             toggleTimer();
-    //         }
-    //     }
-    // }, [workLength])
-
-    // useEffect(() => {
-    //     if(currentStep % 2 === 0){
-    //         setRemainingTime(shortBreakLength * 60)
-    //         if(!isPaused){
-    //             toggleTimer()
-    //         }
-    //     }
-    // }, [shortBreakLength])
-
-    // useEffect(() => {
-    //     if(currentStep === totalSteps){
-    //         setRemainingTime(longBreakLength * 60)
-    //         if(!isPaused){
-    //             toggleTimer()
-    //         }
-    //     }
-    // }, [longBreakLength])
 
     useEffect(() => {
         if(remainingTime === 0){
@@ -127,11 +104,6 @@ function Timer() {
         if (remainingTime === 0){
             setTime() 
         }
-            // call a function that toggles theme for working and break sessions
-     
-            // add a apply button in settings to update settings
-                // select all elements using query selector and iterate through them, updating the state of settings
-                //or make function that update all states and invoke them all when apply is clicked
         
      }, [currentStep])
 
@@ -161,31 +133,6 @@ function Timer() {
             setIsPaused(true);
         }
     }
-
-    // function applySavedState(savedState: SavedState){
-    //     // console.log('inside applySavedState')
-    //     console.log('inside applySavedState, savedState = ', savedState)
-    //     setRemainingTime(savedState.remainingTime);
-    //     setWorkLength(savedState.workLength);
-    //     setShortBreakLength(savedState.shortBreakLength);
-    //     setLongBreakLength(savedState.longBreakLength);
-    //     setCurrentStep(savedState.currentStep);
-    //     setTotalSteps(savedState.totalSteps);
-    //     setIsBreak(savedState.isBreak);
-    //     setHasAudioAlert(savedState.hasAudioAlert);
-    //     setHasVisualAlert(savedState.hasVisualAlert);
-    // }
-
-    // function applySavedSettings(savedSettings: SavedSettings){
-    //     //console.log('inside applySavedSettigns');
-    //     console.log('inside applySavedSettigns, savedSettings = ', savedSettings)
-    //     setWorkLength(savedSettings.workLength);
-    //     setShortBreakLength(savedSettings.shortBreakLength);
-    //     setLongBreakLength(savedSettings.longBreakLength);
-    //     setTotalSteps(savedSettings.totalSteps);
-    //     setHasAudioAlert(savedSettings.hasAudioAlert);
-    //     setHasVisualAlert(savedSettings.hasVisualAlert);
-    // }
 
     function applySettings(){
         localStorage.removeItem('timerState');
