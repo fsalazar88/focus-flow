@@ -6,6 +6,7 @@ import pauseIcon from '../assets/pause-icon.svg'
 import Progress from './Progress';
 import Settings from './Settings';
 import Task from './Task';
+import { useTimerContext } from '../contexts/TimerContext';
 import './Timer.css'
 
 interface SavedState {
@@ -45,48 +46,37 @@ function Timer() {
     const [currentStep, setCurrentStep] = useState(1)
     const [totalSteps, setTotalSteps] = useState(parsedSettings ? parsedSettings.totalSteps : 8)
     const [isBreak, setIsBreak] = useState(false)
+    // const [wasRunning, setWasRunning] = useState(false)
     const [hasVisualAlert, setHasVisualAlert] = useState<boolean | undefined>(parsedSettings ? parsedSettings.hasVisualAlert : false)
     const [hasAudioAlert, setHasAudioAlert] = useState<boolean | undefined>(parsedSettings ? parsedSettings.hasAudioAlert : false)
-    const [hasSavedState, setHasSavedState] = useState(true);
+    const { shouldReapplyTimerState, setShouldReapplyTimerState } = useTimerContext(); // Use the context
 
     useEffect(() => {
         console.log('inside useEffect to set savedState')
-        if(hasSavedState){
+        if(shouldReapplyTimerState){
             console.log('saved state is true so this showed')
-            setHasSavedState(false)
+            setShouldReapplyTimerState(false)
+            const savedState = localStorage.getItem('timerState');
+            if (savedState) {
+                const parsedState: SavedState = JSON.parse(savedState);
+                setRemainingTime(parsedState.remainingTime);
+                setWorkLength(parsedState.workLength);
+                setShortBreakLength(parsedState.shortBreakLength);
+                setLongBreakLength(parsedState.longBreakLength);
+                setCurrentStep(parsedState.currentStep);
+                setTotalSteps(parsedState.totalSteps);
+                setIsBreak(parsedState.isBreak);
+                setHasAudioAlert(parsedState.hasAudioAlert);
+                setHasVisualAlert(parsedState.hasVisualAlert);
+            } 
         }
-        const savedState = localStorage.getItem('timerState');
-        if (savedState) {
-            const parsedState: SavedState = JSON.parse(savedState);
-            setRemainingTime(parsedState.remainingTime);
-            setWorkLength(parsedState.workLength);
-            setShortBreakLength(parsedState.shortBreakLength);
-            setLongBreakLength(parsedState.longBreakLength);
-            setCurrentStep(parsedState.currentStep);
-            setTotalSteps(parsedState.totalSteps);
-            setIsBreak(parsedState.isBreak);
-            setHasAudioAlert(parsedState.hasAudioAlert);
-            setHasVisualAlert(parsedState.hasVisualAlert);
-        } else if (parsedSettings) {
-            setWorkLength(parsedSettings.workLength);
-            setShortBreakLength(parsedSettings.shortBreakLength);
-            setLongBreakLength(parsedSettings.longBreakLength);
-            setTotalSteps(parsedSettings.totalSteps);
-            setHasAudioAlert(parsedSettings.hasAudioAlert);
-            setHasVisualAlert(parsedSettings.hasVisualAlert);
-            setRemainingTime(parsedSettings.workLength * 60);
-        }
-    }, [])
+    }, [shouldReapplyTimerState, setShouldReapplyTimerState])
 
     useEffect(() => {
-        // console.log('inside all dependencies useEffect')
         saveSettings();
-        const savedState = localStorage.getItem('timerState');
-        if(!savedState){
-            // console.log('There was no saved timer STATE');
+        if(!shouldReapplyTimerState){
             setTime();
         }
-        localStorage.removeItem('timerState');
     }, [workLength, shortBreakLength, longBreakLength, totalSteps, hasAudioAlert, hasVisualAlert])
 
 
@@ -122,7 +112,6 @@ function Timer() {
 
     function toggleTimer () {
         if(isPaused){
-            localStorage.removeItem('timerState');
             const intervalId = setInterval(() => {
                 setRemainingTime((prev) => prev - 6)
             }, 1000)
@@ -135,7 +124,6 @@ function Timer() {
     }
 
     function applySettings(){
-        localStorage.removeItem('timerState');
         const timeIntervalsDiv = document.querySelector(".time-intervals");
         if (timeIntervalsDiv) {
             const selectElements = timeIntervalsDiv.querySelectorAll<HTMLSelectElement>("select");
@@ -185,7 +173,7 @@ function Timer() {
     }
 
     function saveSettings() {
-        const settings = {
+        const settings: SavedSettings = {
             workLength,
             shortBreakLength,
             longBreakLength,
@@ -237,9 +225,10 @@ function Timer() {
     function handleOpenSettings() {
         const modal = document.querySelector(".modal");
         modal?.classList.add("active")
-        // if(!isPaused){
-        //     toggleTimer();
-        // }
+        if(!isPaused){ // If timerIntervalId is truthy, the timer was running
+            // setWasRunning(true); // create a context for was running. use it in settings and in history to restart timer if wasRunning is true
+            toggleTimer();
+        }
     }
 
     // function showNotification() {
@@ -306,6 +295,7 @@ function Timer() {
                 hasVisualAlert={hasVisualAlert}
                 hasAudioAlert={hasAudioAlert}
                 toggleTimer={toggleTimer}
+                // handleNotificationsChange={handleNotificationsChange}
             />
             <Progress
                 currentStep={currentStep}

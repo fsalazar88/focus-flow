@@ -46,16 +46,18 @@
 } */
 
 .task svg {
-    /* width: 30px; */
+    height: 34px;
+    width: 34px;
+    margin: 0;
+    padding: 0;
     pointer-events: none;
 }
 .history {
-    height: 30px;
-    width: 40px;
-    /* height: 25px; */
-    /* width: 25px; */
+    height: 34px;
+    width: 34px;
     margin: 0;
     padding: 0;
+    border: none;
     color: #1D3557;
     /* padding-left: 5px; */
 
@@ -68,10 +70,16 @@
 }
 
 .history:focus {
-    outline: 3px solid color-mix(in srgb, #1D3557 70%, white);
-    border-radius: 4px;
+    /* height: 30px;
+    width: 30px; */
+    outline: 2px solid color-mix(in srgb, #2a6f97 50%, white);
+    /* padding: 2px; */
+    border-radius: 6px;
 }
 
 .history:hover {
-    /* background-color: color-mix(in srgb, #2a6f97 75%, white); */
+    background-color: color-mix(in srgb, #2a6f97 25%, white);
+    outline: 2px solid color-mix(in srgb, #2a6f97 25%, white);
+    border-radius: 6px;
 }
+

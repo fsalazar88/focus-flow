@@ -2,6 +2,7 @@
     position: relative;
     padding: 20px;
     width: 600px;
+    min-height: 600px;
     margin: 0 auto;
     background-color: #f9f9f9;
     border-radius: 8px;
@@ -12,10 +13,27 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 20px 0 50px 0;
     gap: 10px;
 }
+ 
+.search.with-notification {
+    margin: 20px 0 10px 0;
+}
 
-.history-container button{
+.search h3 {
+    padding: 0;
+    margin: 0;
+}
+
+.notification {
+    color: red;
+    margin: 0 0 22px 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+#close-history{
     position: absolute;
     right: 10px;
     top: 10px;
@@ -29,7 +47,7 @@
 
 .history-container h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin: 20px 0;
     text-decoration: underline;
 }
 
@@ -39,16 +57,40 @@
 }
 
 .history-item {
+    /* position: relative; */
     background-color: #ffffff;
-    padding: 15px;
+    padding: 7px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.edit-task {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    font-size: small;
+    margin-bottom: 10px;
+}
+
+.edit-save {
+    position: absolute; 
+    right: 0px;
+    top: 0px;
+    height: 90%;
+    width: 50px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.history-item input {
+    /* margin-bottom: 10px; */
+}
+
 .history-item h3 {
-    margin: 0 0 10px;
+    margin: 0;
     color: #333;
     font-size:medium;
 }

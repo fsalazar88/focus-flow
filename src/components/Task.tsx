@@ -45,10 +45,6 @@ function Task( {remainingTime, workLength, isBreak, saveTimerState, toggleTimer,
         }
     }, [remainingTime])
 
-    // useEffect(() => {
-    //     console.log("taskHistory: ", taskHistory)
-    // }, [taskHistory])
-
     function handleClick(){
         saveTimerState();
         if(!isPaused){

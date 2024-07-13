@@ -1,18 +1,6 @@
 import { useEffect } from 'react';
 import './Settings.css'
 
-interface SavedState {
-    remainingTime: number,
-    workLength: number,
-    shortBreakLength: number,
-    longBreakLength: number,
-    currentStep: number;
-    totalSteps: number,
-    isBreak: boolean,
-    hasAudioAlert: boolean | undefined,
-    hasVisualAlert: boolean | undefined,
-}
-
 interface SettingsProps {
     shortBreakLength: number, 
     longBreakLength: number,
@@ -28,10 +16,11 @@ interface SettingsProps {
     isPaused: boolean,
     hasAudioAlert: boolean | undefined,
     hasVisualAlert: boolean | undefined,
+    // handleNotificationsChange: (elementId: string, isChecked: boolean) => void,
 
 }
 
-function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClick, totalSteps, onSaveClick, remainingTime, isPaused, toggleTimer }: SettingsProps ) {
+function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClick, totalSteps, onSaveClick, remainingTime, isPaused, toggleTimer, hasAudioAlert, hasVisualAlert }: SettingsProps ) {
 
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent){
@@ -80,6 +69,12 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClic
         //     onCloseClick();
         // }
     }
+
+    // function handleClick(e: React.ChangeEvent<HTMLInputElement>){
+    //     const elementId = e.target.id;
+    //     const isChecked = e.target.checked;
+    //     handleNotificationsChange(elementId, isChecked);
+    // }
 
     return (
         <div className='modal'>
@@ -130,14 +125,14 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClic
                             <div className='audio-alert'>   
                                 <p>Audio Alert</p>
                                 <label className="switch">
-                                    <input type="checkbox" />
+                                    <input type="checkbox" id='audio-alert' defaultChecked={hasAudioAlert} />
                                     <span className="slider round"></span>
                                 </label>
                             </div>
                             <div className='visual-alert'>   
                                 <p>Visual Alert</p>
                                 <label className="switch">
-                                    <input type="checkbox"/>
+                                    <input type="checkbox" id='visual-alert' defaultChecked={hasVisualAlert}/>
                                     <span className="slider round"></span>
                                 </label>
                             </div>
