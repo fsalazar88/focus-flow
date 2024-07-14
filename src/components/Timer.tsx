@@ -30,6 +30,15 @@ interface SavedSettings {
     hasVisualAlert: boolean | undefined,
 }
 
+interface NotificationOptions{
+    body: string,
+    icon?: string,
+    badge?: string,
+    requireInteraction: boolean,
+    silent: boolean,
+    vibration?: boolean;
+}
+
 const savedSettings = localStorage.getItem('savedSettings');
 let parsedSettings: SavedSettings | null = null;
 if(savedSettings !== null){
@@ -83,10 +92,10 @@ function Timer() {
 
     useEffect(() => {
         if(remainingTime === 0){
+            showNotification();
             toggleTimer()
             setCurrentStep((prevStep) => prevStep + 1)
             setIsBreak(!isBreak)
-            // showNotification();
         }
      }, [remainingTime])
 
@@ -225,8 +234,8 @@ function Timer() {
     function handleOpenSettings() {
         const modal = document.querySelector(".modal");
         modal?.classList.add("active")
-        if(!isPaused){ // If timerIntervalId is truthy, the timer was running
-            // setWasRunning(true); // create a context for was running. use it in settings and in history to restart timer if wasRunning is true
+        if(!isPaused){ 
+            // setWasRunning(true); // create a context for wasRunning. use it in settings and in history to restart timer if wasRunning is true
             toggleTimer();
         }
     }
@@ -240,11 +249,120 @@ function Timer() {
     //     ipcRenderer.send('focus-window');
     // }
 
+    // function showNotification() {
+    //     console.log('sending focus-window event')
+    //     window.ipcRenderer.send('show-notification', 'Pomodoro Timer', 'Your work or break session has ended.');
+    //     window.ipcRenderer.send('focus-window');
+    // }
+
+    // function showNotification() {
+
+    //     let options: NotificationOptions;
+    //     let title: string;
+
+    //     console.log('inside showNotification()')
+    //     if (Notification.permission === "granted") {
+    //         console.log('notifications granted')
+    //         new Notification(title, options);
+    //     } else if (Notification.permission !== "denied") {
+    //         console.log('requesting notification access')
+    //         Notification.requestPermission().then(permission => {
+    //             if (permission === "granted") {
+    //                 new Notification(title, options);
+    //             }
+    //         });
+    //     } else {
+    //         console.log('notification denied')
+    //     }
+    // }
+
     function showNotification() {
-        console.log('sending focus-window event')
-        window.ipcRenderer.send('show-notification', 'Pomodoro Timer', 'Your work or break session has ended.');
-        window.ipcRenderer.send('focus-window');
+        let options: NotificationOptions;
+        const title: string = 'Pomodoro Timer';
+
+        if(!isBreak && currentStep === totalSteps - 1){
+            options = {
+                body: "All Sessions Complete! Take a well deserved long break!",
+                icon: '/path/to/icon.png',
+                requireInteraction: true,
+                silent: false,
+            }
+        } else if(!isBreak) {
+            options = {
+                body: "Time's up! Take a break!",
+                icon: '/path/to/icon.png',
+                requireInteraction: true,
+                silent: false,
+            }
+        } else if (isBreak){
+            options = {
+                body: "Time's up! Get back to work!",
+                icon: '/path/to/icon.png',
+                requireInteraction: true,
+                silent: false,
+            }
+        }
+
+        // Check if the browser supports notifications
+        if (!("Notification" in window)) {
+          alert("This browser does not support desktop notification");
+          // Check whether notification permissions have already been granted;
+          // if so, create a notification
+        } else if (Notification.permission === "granted") {
+          new Notification(title, options);
+        } else if (Notification.permission !== "denied") {
+          // We need to ask the user for permission
+          Notification.requestPermission().then((permission) => {
+            // If the user accepts, let's create a notification
+            if (permission === "granted") {
+              new Notification(title, options);
+            }
+          });
+        }
     }
+
+    // function requestNotificationPermission() {
+    //     if ('Notification' in window) {
+    //         Notification.requestPermission().then(permission => {
+    //             if (permission === 'granted') {
+    //                 console.log('Notification permission granted.');
+    //             } else {
+    //                 console.log('Notification permission denied.');
+    //             }
+    //         });
+    //     } else {
+    //         console.log('This browser does not support notifications.');
+    //     }
+    // }
+    
+    // function showNotification(title, options) {
+    //     if (Notification.permission === 'granted') {
+    //         new Notification(title, options);
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     // Request permission when the component mounts
+    //     requestNotificationPermission();
+
+    //     // Test notification
+    //     showNotification('Pomodoro Timer', {
+    //         body: "Time's up! Take a break!",
+    //         icon: '/path/to/icon.png',
+    //         requireInteraction: true,
+    //         silent: false,
+            
+    //     });
+    //     // setTimeout(() => {
+    //     //     showNotification('Pomodoro Timer', {
+    //     //         body: "Time's up! Take a break!",
+    //     //         icon: '/path/to/icon.png',
+    //     //         requireInteraction: true,
+    //     //         silent: false,
+                
+    //     //     });
+    //     // }, 5000); // Delay to ensure the component is fully loaded
+    // }, []);
 
     return (
         <div className='container'>
