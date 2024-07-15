@@ -3,6 +3,7 @@ import PlaybackToggle from './PlaybackToggle';
 import Digits from './Digits';
 import playIcon from '../assets/play-icon.svg'
 import pauseIcon from '../assets/pause-icon.svg'
+import timerIcon from '../assets/timer-fill.svg'
 import Progress from './Progress';
 import Settings from './Settings';
 import Task from './Task';
@@ -61,7 +62,7 @@ function Timer() {
     const { shouldReapplyTimerState, setShouldReapplyTimerState } = useTimerContext(); // Use the context
 
     useEffect(() => {
-        console.log('inside useEffect to set savedState')
+        // console.log('inside useEffect to set savedState')
         if(shouldReapplyTimerState){
             console.log('saved state is true so this showed')
             setShouldReapplyTimerState(false)
@@ -88,11 +89,11 @@ function Timer() {
         }
     }, [workLength, shortBreakLength, longBreakLength, totalSteps, hasAudioAlert, hasVisualAlert])
 
-
-
     useEffect(() => {
         if(remainingTime === 0){
-            showNotification();
+            if(hasVisualAlert){
+                showNotification();
+            }
             toggleTimer()
             setCurrentStep((prevStep) => prevStep + 1)
             setIsBreak(!isBreak)
@@ -190,7 +191,7 @@ function Timer() {
             hasAudioAlert,
             hasVisualAlert,
         };
-        console.log('inside saveSettings, settings = ', settings)
+        // console.log('inside saveSettings, settings = ', settings)
         localStorage.setItem('savedSettings', JSON.stringify(settings));
     }
 
@@ -255,26 +256,34 @@ function Timer() {
     //     window.ipcRenderer.send('focus-window');
     // }
 
-    // function showNotification() {
-
-    //     let options: NotificationOptions;
-    //     let title: string;
-
-    //     console.log('inside showNotification()')
-    //     if (Notification.permission === "granted") {
-    //         console.log('notifications granted')
-    //         new Notification(title, options);
-    //     } else if (Notification.permission !== "denied") {
-    //         console.log('requesting notification access')
-    //         Notification.requestPermission().then(permission => {
-    //             if (permission === "granted") {
-    //                 new Notification(title, options);
-    //             }
+    // function showSimpleNotification() {
+    //     if (Notification.permission === 'granted') {
+    //         console.log('permission = granted, notification should show')
+    //         new Notification('Test Notification', {
+    //             body: "This is a test notification.",
+    //             icon: '/path/to/icon.png',
+    //             requireInteraction: false,
     //         });
-    //     } else {
-    //         console.log('notification denied')
     //     }
     // }
+    
+    // showSimpleNotification();
+
+    // function showSimpleNotification() {
+    //     if (Notification.permission === 'granted') {
+    //       console.log('Notification created');
+    //       const notification = new Notification('Test Notification', {
+    //         body: "This is a test notification.",
+    //         //icon: timerIcon,
+    //         badge: timerIcon,
+    //         requireInteraction: true,
+    //       });
+    //       setTimeout(() => {
+    //         console.log('5 seconds passed');
+    //       }, 5000);
+    //     }
+    //   }
+    // showSimpleNotification();
 
     function showNotification() {
         let options: NotificationOptions;
@@ -283,21 +292,21 @@ function Timer() {
         if(!isBreak && currentStep === totalSteps - 1){
             options = {
                 body: "All Sessions Complete! Take a well deserved long break!",
-                icon: '/path/to/icon.png',
+                icon: timerIcon,
                 requireInteraction: true,
                 silent: false,
             }
         } else if(!isBreak) {
             options = {
                 body: "Time's up! Take a break!",
-                icon: '/path/to/icon.png',
+                icon: timerIcon,
                 requireInteraction: true,
                 silent: false,
             }
         } else if (isBreak){
             options = {
                 body: "Time's up! Get back to work!",
-                icon: '/path/to/icon.png',
+                icon: timerIcon,
                 requireInteraction: true,
                 silent: false,
             }
@@ -320,49 +329,6 @@ function Timer() {
           });
         }
     }
-
-    // function requestNotificationPermission() {
-    //     if ('Notification' in window) {
-    //         Notification.requestPermission().then(permission => {
-    //             if (permission === 'granted') {
-    //                 console.log('Notification permission granted.');
-    //             } else {
-    //                 console.log('Notification permission denied.');
-    //             }
-    //         });
-    //     } else {
-    //         console.log('This browser does not support notifications.');
-    //     }
-    // }
-    
-    // function showNotification(title, options) {
-    //     if (Notification.permission === 'granted') {
-    //         new Notification(title, options);
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     // Request permission when the component mounts
-    //     requestNotificationPermission();
-
-    //     // Test notification
-    //     showNotification('Pomodoro Timer', {
-    //         body: "Time's up! Take a break!",
-    //         icon: '/path/to/icon.png',
-    //         requireInteraction: true,
-    //         silent: false,
-            
-    //     });
-    //     // setTimeout(() => {
-    //     //     showNotification('Pomodoro Timer', {
-    //     //         body: "Time's up! Take a break!",
-    //     //         icon: '/path/to/icon.png',
-    //     //         requireInteraction: true,
-    //     //         silent: false,
-                
-    //     //     });
-    //     // }, 5000); // Delay to ensure the component is fully loaded
-    // }, []);
 
     return (
         <div className='container'>
