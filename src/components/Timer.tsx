@@ -213,6 +213,8 @@ function Timer() {
                 break;
         }
     }
+
+    
     // function handleIntervalChange(event: React.ChangeEvent<HTMLSelectElement>){
     //     switch (event.target.name) {
     //         case "workLength":
