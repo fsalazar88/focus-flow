@@ -40,6 +40,8 @@ interface NotificationOptions{
     vibration?: boolean;
 }
 
+
+
 const savedSettings = localStorage.getItem('savedSettings');
 let parsedSettings: SavedSettings | null = null;
 if(savedSettings !== null){
@@ -214,7 +216,7 @@ function Timer() {
         }
     }
 
-    
+
     // function handleIntervalChange(event: React.ChangeEvent<HTMLSelectElement>){
     //     switch (event.target.name) {
     //         case "workLength":
