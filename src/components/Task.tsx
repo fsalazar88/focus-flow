@@ -57,11 +57,6 @@ function Task( {remainingTime, workLength, isBreak, saveTimerState, toggleTimer,
         setTask(event.target.value)
     }
 
-
-
-
-    
-
     return (
         <div className="task">
             <h3>Current Task:</h3>
