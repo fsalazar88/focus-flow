@@ -144,6 +144,10 @@ function History () {
             {displayedHistory.length === 0 && searchQuery && <p>No tasks match search criteria</p>}
         </div>
     );
+
+
+
+    
 }
 
 export default History
