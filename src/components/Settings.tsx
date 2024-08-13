@@ -76,6 +76,8 @@ function Settings ( { shortBreakLength, longBreakLength, workLength, onCloseClic
     //     handleNotificationsChange(elementId, isChecked);
     // }
 
+    
+
     return (
         <div className='modal'>
             <div className='modal-content'>                                                                                             
